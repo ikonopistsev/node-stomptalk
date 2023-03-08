@@ -8,8 +8,8 @@ jobs:
         steps:
             - name: checkout
               uses: actions/checkout@v2
-            - name: Checkout submodules
-              uses: textbook/git-checkout-submodule-action@master              
+              with:
+                submodules: 'true'           
             - name: node
               uses: actions/setup-node@v2
               with:
