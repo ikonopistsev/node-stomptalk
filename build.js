@@ -10,7 +10,7 @@ function exec(cmd) {
 }
 
 if (os.type() === 'Linux' || os.type() === 'Darwin') 
-   exec("npx cmake-js rebuild"); 
+   exec("npx cmake-js rebuild --config Release"); 
 else if (os.type() === 'Windows_NT') 
    exec("npx cmake-js rebuild --config RelWithDebInfo");
 else
