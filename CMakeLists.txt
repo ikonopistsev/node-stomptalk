@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(ext/stomptalk)
 
 add_library(${PROJECT_NAME} SHARED 
-	src/main.cpp
+	src/native_stomptalk.cpp
 )
 
 set_target_properties(${PROJECT_NAME}
