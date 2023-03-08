@@ -64,9 +64,9 @@ private:
  
     void on_body(stomptalk::parser_hook&, const void* at, std::size_t size) noexcept override
 	{   
-		auto ch = const_cast<char*>(static_cast<const char*>(at));
+		auto ch = static_cast<const char*>(at);
 		onBody_.Call(env_.Global(), {
-			Napi::Buffer<char>::New(env_, ch, size)
+			Napi::Buffer<char>::Copy(env_, ch, size)
 		});
 	}
  
