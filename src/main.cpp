@@ -4,6 +4,8 @@
 
 using namespace Napi;
 
+namespace {
+
 class NativeHook final
 	: public stomptalk::hook_base
 {
@@ -74,6 +76,8 @@ private:
 		onFrameEnd_.Call(env_.Global(), {});
 	}
 };
+
+}
 
 class NativeStomptalk final
 	: public ObjectWrap<NativeStomptalk>
