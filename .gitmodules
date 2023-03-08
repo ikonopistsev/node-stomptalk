@@ -1,0 +1,3 @@
+[submodule "ext/stomptalk"]
+	path = ext/stomptalk
+	url = https://github.com/ikonopistsev/stomptalk.git
