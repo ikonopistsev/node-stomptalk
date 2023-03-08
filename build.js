@@ -9,9 +9,4 @@ function exec(cmd) {
     process.exit(status);
 }
 
-if (os.type() === 'Linux' || os.type() === 'Darwin') 
-   exec("npx cmake-js rebuild --config Release"); 
-else if (os.type() === 'Windows_NT') 
-   exec("npx cmake-js rebuild --config RelWithDebInfo");
-else
-   throw new Error("Unsupported OS found: " + os.type());
+exec("npx cmake-js rebuild --config Release"); 

@@ -1,11 +1,7 @@
 const EventEmitter = require("node:events");
 const os = require("os");
 
-let modulePath = './build/Release/node-stomptalk-native';
-if (os.type() == 'Windows_NT') {
-    nativePath = './build/RelWithDebInfo/node-stomptalk-native';
-};
-
+const modulePath = './build/Release/node-stomptalk-native';
 const { NativeStompTalk } = require(modulePath);
 
 class StompTalk extends EventEmitter {
