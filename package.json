@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "libstomptalk binding",
   "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node demo.js",
     "build": "node build.js",
     "install": "node build.js"
   },
