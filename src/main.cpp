@@ -62,12 +62,25 @@ private:
 		});
 	}
  
-    void on_body(stomptalk::parser_hook&, const void* at, std::size_t size) noexcept override
+    void on_body(stomptalk::parser_hook& hook, const void* at, std::size_t size) noexcept override
 	{   
 		auto ch = static_cast<const char*>(at);
-		onBody_.Call(env_.Global(), {
-			Napi::Buffer<char>::Copy(env_, ch, size)
-		});
+		auto content_length = hook.content_length();
+		if (content_length) 
+		{
+			auto content_left = hook.content_left();
+			onBody_.Call(env_.Global(), {
+				Napi::Buffer<char>::Copy(env_, ch, size),
+				Napi::Number::New(env_, static_cast<double>(content_length)),
+				Napi::Number::New(env_, static_cast<double>(content_left))				
+			});
+		}
+		else
+		{
+			onBody_.Call(env_.Global(), {
+				Napi::Buffer<char>::Copy(env_, ch, size)				
+			});
+		}
 	}
  
     void on_frame_end(stomptalk::parser_hook&, const char*) noexcept override

@@ -31,8 +31,8 @@ class StompTalk extends EventEmitter {
             headerVal => {
                 this.emit('headerVal', headerVal);
             },
-            body => {
-                this.emit('body', body);
+            (body, contentLength, contentLeft) => {
+                this.emit('body', body, contentLength, contentLeft);
             },
             () => {
                 this.emit('frameEnd');
