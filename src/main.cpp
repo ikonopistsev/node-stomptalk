@@ -8,7 +8,6 @@ class NativeHook final
 	: public stomptalk::hook_base
 {
 	Napi::Env& env_;
-	Napi::Function& onError_;
 	Napi::Function& onFrameStart_;
 	Napi::Function& onMethod_;
 	Napi::Function& onHeaderKey_;
@@ -18,7 +17,6 @@ class NativeHook final
 
 public:
 	NativeHook(Napi::Env& env,
-		Napi::Function& onError, 
 		Napi::Function& onFrameStart, 
 		Napi::Function& onMethod, 
 		Napi::Function& onHeaderKey,
@@ -26,7 +24,6 @@ public:
 		Napi::Function& onBody,
 		Napi::Function& onFrameEnd)
 		: env_(env)
-		, onError_(onError)
 		, onFrameStart_(onFrameStart)
 		, onMethod_(onMethod)
 		, onHeaderKey_(onHeaderKey)
@@ -112,13 +109,17 @@ private:
 		auto onHeaderVal = info[5].As<Napi::Function>();
 		auto onBody = info[6].As<Napi::Function>();
 		auto onFrameEnd = info[7].As<Napi::Function>();
-		NativeHook user{env, onError, 
-			onFrameStart, onMethod, onHeaderKey, onHeaderVal, 
+		NativeHook user{env, onFrameStart, 
+			onMethod, onHeaderKey, onHeaderVal, 
 			onBody, onFrameEnd};
-
 		stomptalk::parser_hook hook{user};
-		auto size = parser_.run(hook, inputBuffer.Data(), 
-		 	inputBuffer.Length());
+		auto length = inputBuffer.Length();
+		auto size = parser_.run(hook, inputBuffer.Data(), length);
+		if (size != length) {
+			onError.Call(env.Global(), {
+				Napi::Number::New(env, hook.error())
+			});
+		}
 
 		return Napi::Number::New(env, size);
 	}
