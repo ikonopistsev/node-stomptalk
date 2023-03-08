@@ -1,6 +1,5 @@
-#include <napi.h>
 #include "stomptalk/parser.hpp"
-#include "stomptalk/hook_base.hpp"
+#include <napi.h>
 
 using namespace Napi;
 
