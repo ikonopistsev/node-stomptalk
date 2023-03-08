@@ -4,35 +4,85 @@
 
 using namespace Napi;
 
-struct NativeHook final
-	: stomptalk::hook_base
+class NativeHook final
+	: public stomptalk::hook_base
 {
+	Napi::Env& env_;
+	Napi::Function& onError_;
+	Napi::Function& onFrameStart_;
+	Napi::Function& onMethod_;
+	Napi::Function& onHeaderKey_;
+	Napi::Function& onHeaderVal_;
+	Napi::Function& onBody_;
+	Napi::Function& onFrameEnd_;
+
+public:
+	NativeHook(Napi::Env& env,
+		Napi::Function& onError, 
+		Napi::Function& onFrameStart, 
+		Napi::Function& onMethod, 
+		Napi::Function& onHeaderKey,
+		Napi::Function& onHeaderVal, 
+		Napi::Function& onBody,
+		Napi::Function& onFrameEnd)
+		: env_(env)
+		, onError_(onError)
+		, onFrameStart_(onFrameStart)
+		, onMethod_(onMethod)
+		, onHeaderKey_(onHeaderKey)
+		, onHeaderVal_(onHeaderVal)
+		, onBody_(onBody)
+		, onFrameEnd_(onFrameEnd)
+	{   }
 
 private:
-	virtual void on_frame(stomptalk::parser_hook&, const char *frame_start) noexcept override 
-	{	}
+	void on_frame(stomptalk::parser_hook&, const char*) noexcept override 
+	{	
+		onFrameStart_.Call(env_.Global(), {});
+	}
  
-    virtual void on_method(stomptalk::parser_hook&, 
-        std::uint64_t method_id, const char*, std::size_t) noexcept override
-	{   }
+    void on_method(stomptalk::parser_hook&, 
+        std::uint64_t method_id, const char* at, std::size_t size) noexcept override
+	{   
+		onMethod_.Call(env_.Global(), {
+			Napi::String::New(env_, at, size)
+		});
+	}
  
-    virtual void on_hdr_key(stomptalk::parser_hook&, 
-        std::uint64_t hader_id, const char*, std::size_t) noexcept override
-	{   }
+    void on_hdr_key(stomptalk::parser_hook&, 
+        std::uint64_t hader_id, const char* at, std::size_t size) noexcept override
+	{   
+		onHeaderKey_.Call(env_.Global(), {
+			Napi::String::New(env_, at, size)
+		});		
+	}
  
-    virtual void on_hdr_val(stomptalk::parser_hook&, const char*, std::size_t) noexcept override
-	{   }
+    void on_hdr_val(stomptalk::parser_hook&, const char* at, std::size_t size) noexcept override
+	{   
+		onHeaderVal_.Call(env_.Global(), {
+			Napi::String::New(env_, at, size)
+		});
+	}
  
-    virtual void on_body(stomptalk::parser_hook&, const void*, std::size_t) noexcept override
-	{   }
+    void on_body(stomptalk::parser_hook&, const void* at, std::size_t size) noexcept override
+	{   
+		auto ch = const_cast<char*>(static_cast<const char*>(at));
+		onBody_.Call(env_.Global(), {
+			Napi::Buffer<char>::New(env_, ch, size)
+		});
+	}
  
-    virtual void on_frame_end(stomptalk::parser_hook&, const char *frame_end) noexcept override
-	{   }
+    void on_frame_end(stomptalk::parser_hook&, const char*) noexcept override
+	{   
+		onFrameEnd_.Call(env_.Global(), {});
+	}
 };
 
 class NativeStomptalk final
 	: public ObjectWrap<NativeStomptalk>
-{	
+{
+	stomptalk::parser parser_{};
+
 public:
     NativeStomptalk(const Napi::CallbackInfo& callbackInfo)
 		: ObjectWrap(callbackInfo)
@@ -51,19 +101,26 @@ public:
   		return exports;
 	}
 
-    ~NativeStomptalk()
-	{   }
-
 private:
 	Napi::Value parse(const Napi::CallbackInfo& info) {
-		Napi::Env env = info.Env();
-		Napi::Function cb = info[0].As<Napi::Function>();
-  		cb.Call(env.Global(), { NativeStomptalk::GetValue(info) });
-		return Napi::Number::New(info.Env(), 0);
-	}
+		auto env = info.Env();
+		auto inputBuffer = info[0].As<Napi::Buffer<char>>();
+		auto onError = info[1].As<Napi::Function>();
+		auto onFrameStart = info[2].As<Napi::Function>();
+		auto onMethod = info[3].As<Napi::Function>();
+		auto onHeaderKey = info[4].As<Napi::Function>();
+		auto onHeaderVal = info[5].As<Napi::Function>();
+		auto onBody = info[6].As<Napi::Function>();
+		auto onFrameEnd = info[7].As<Napi::Function>();
+		NativeHook user{env, onError, 
+			onFrameStart, onMethod, onHeaderKey, onHeaderVal, 
+			onBody, onFrameEnd};
 
-	Napi::Value GetValue(const Napi::CallbackInfo& info) {
-  		return Napi::Number::New(info.Env(), 42);
+		stomptalk::parser_hook hook{user};
+		auto size = parser_.run(hook, inputBuffer.Data(), 
+		 	inputBuffer.Length());
+
+		return Napi::Number::New(env, size);
 	}
 };
 

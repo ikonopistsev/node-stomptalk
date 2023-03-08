@@ -12,6 +12,11 @@ add_library(${PROJECT_NAME} SHARED
 	src/main.cpp
 )
 
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES POSITION_INDEPENDENT_CODE
+    ON
+)
+
 target_link_libraries(${PROJECT_NAME} stomptalk)
 
 # Gives our library file a .node extension without any "lib" prefix
