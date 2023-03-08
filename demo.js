@@ -30,9 +30,9 @@ stompTalk.on('headerKey', (headerKey) => {
 stompTalk.on('headerVal', headerVal => {
     console.log('headerVal:', headerVal);
 });
-stompTalk.on('body', body => {
-    console.log('body:', body.toString('ascii'));
-});
+stompTalk.on('body', (data, contentLength, contentLeft) => {
+    console.log('body:', data.toString('ascii'), contentLength, contentLeft )
+})
 stompTalk.on('frameEnd', () => {
     console.log('frameEnd');
 });

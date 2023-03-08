@@ -1,6 +1,6 @@
 {
   "name": "node-stomptalk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "libstomptalk binding",
   "main": "index.js",
   "scripts": {
