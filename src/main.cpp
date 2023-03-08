@@ -78,27 +78,27 @@ private:
 
 }
 
-class NativeStomptalk final
-	: public ObjectWrap<NativeStomptalk>
+class NativeStompTalk final
+	: public ObjectWrap<NativeStompTalk>
 {
 	stomptalk::parser parser_{};
 
 public:
-    NativeStomptalk(const Napi::CallbackInfo& callbackInfo)
+    NativeStompTalk(const Napi::CallbackInfo& callbackInfo)
 		: ObjectWrap(callbackInfo)
 	{   }
    
 	static Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  		Napi::Function func = DefineClass(env, "NativeStomptalk", {
-			InstanceMethod("parse", &NativeStomptalk::parse)
+  		Napi::Function func = DefineClass(env, "NativeStompTalk", {
+			InstanceMethod("parse", &NativeStompTalk::parse)
 		});
 
 		Napi::FunctionReference* constructor = new Napi::FunctionReference();
 		*constructor = Napi::Persistent(func);
-  		env.SetInstanceData(constructor);
+		env.SetInstanceData(constructor);
 
-  		exports.Set("NativeStomptalk", func);
-  		return exports;
+		exports.Set("NativeStompTalk", func);
+		return exports;
 	}
 
 private:
@@ -129,7 +129,7 @@ private:
 };
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  return NativeStomptalk::Init(env, exports);
+  return NativeStompTalk::Init(env, exports);
 }
 
 NODE_API_MODULE(addon, Init)

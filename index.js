@@ -6,12 +6,12 @@ if (os.type() == 'Windows_NT') {
     nativePath = './build/RelWithDebInfo/node-stomptalk-native';
 };
 
-const { NativeStomptalk } = require(modulePath);
+const { NativeStompTalk } = require(modulePath);
 
 class StompTalk extends EventEmitter {
     constructor() {
         super();
-        this.nativeStompTalk = new NativeStomptalk();
+        this.nativeStompTalk = new NativeStompTalk();
     }
 
     parse(data) {
