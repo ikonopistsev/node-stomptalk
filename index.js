@@ -1,6 +1,4 @@
 const EventEmitter = require("node:events");
-const os = require("os");
-
 const modulePath = './build/Release/node-stomptalk-native';
 const { NativeStompTalk } = require(modulePath);
 
