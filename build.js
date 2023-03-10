@@ -1,7 +1,5 @@
-var spawnSync = require('child_process').spawnSync;
-var os = require('os');
-
-function exec(cmd) {
+const spawnSync = require('child_process').spawnSync;
+const exec = cmd => {
     const { status } = spawnSync(cmd, {
         shell: true,
         stdio: 'inherit',
@@ -9,4 +7,4 @@ function exec(cmd) {
     process.exit(status);
 }
 
-exec("npx cmake-js rebuild --config Release"); 
+exec("npx cmake-js rebuild --config Release");
